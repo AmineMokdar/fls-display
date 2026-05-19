@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>FLS Display Wand v2</title>
+
+<!-- MSAL.js (Microsoft Authentication Library) -->
+<script src="https://alcdn.msauth.net/browser/3.13.0/js/msal-browser.min.js"
+        integrity="sha384-cy7CD9TbcOLA+/QtKLU5KEhcbqLm6oqB5XmrQjsxLN4FrhCBSL6sf6T1rpqgB68P"
+        crossorigin="anonymous"></script>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    width: 100vw; height: 100vh;
+    background: #000;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* ============ LOGIN GATE ============ */
+  #loginGate, #startGate {
+    position: fixed; inset: 0;
+    background: #000;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+  #loginGate .panel, #startGate .inner {
+    text-align: center;
+    max-width: 70vw;
+  }
+  #loginGate h1, #startGate h1 {
+    font-size: 8vh;
+    font-weight: 200;
+    letter-spacing: 0.05em;
+    margin-bottom: 2vh;
+    color: #fff;
+  }
+  #loginGate p, #startGate p {
+    font-size: 3vh;
+    color: #888;
+    font-weight: 300;
+    margin-bottom: 3vh;
+  }
+  .login-btn {
+    display: inline-flex; align-items: center; gap: 1.5vh;
+    padding: 2.5vh 4vw;
+    background: #0078d4;
+    color: #fff;
+    border: none;
+    border-radius: 0.8vh;
+    font-size: 3vh;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .login-btn:hover, .login-btn:active { background: #106ebe; }
+  .login-btn svg { width: 3vh; height: 3vh; }
+  #loginError {
+    margin-top: 3vh;
+    padding: 2vh 3vw;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: 0.8vh;
+    color: #fca5a5;
+    font-size: 2vh;
+    text-align: left;
+    display: none;
+    max-width: 70vw;
+    word-break: break-word;
+  }
+  #startGate .inner { animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* ============ EMPTY STATE ============ */
+  #emptyState {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 5vh;
+    transition: opacity 0.5s ease;
+  }
+  #emptyState .icon { font-size: 18vh; opacity: 0.12; line-height: 1; }
+  #emptyState .text {
+    font-size: 7vh; font-weight: 200; color: #555; letter-spacing: 0.04em;
+  }
+
+  /* ============ DISPLAY MAIN ============ */
+  #display {
+    width: 100vw; height: 100vh;
+    display: grid;
+    grid-template-rows: 12vh 1fr 1fr 14vh;
+    padding: 3vh 4vw;
+    gap: 1.5vh;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  #display.fade-out { opacity: 0; transform: scale(0.97); }
+
+  .info-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2vw;
+    align-items: stretch;
+  }
+  .info-cell {
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 0.5vh; overflow: hidden;
+    padding: 1vh 1.5vw;
+    border-left: 3px solid rgba(255,255,255,0.08);
+  }
+  .info-cell:first-child { border-left: none; padding-left: 0; }
+  .info-label {
+    font-size: 2vh; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: #6b7280;
+  }
+  .info-value {
+    font-size: 5.2vh; font-weight: 700; color: #fff; line-height: 1.05;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .info-value.quelle-aso { color: #ff8a3c; }
+  .info-value.quelle-lusi { color: #93c5fd; }
+  .info-value.term-1 { color: #4a9eff; }
+  .info-value.term-2 { color: #4ade80; }
+  .info-value.term-3 { color: #ff8a3c; }
+
+  .giant {
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; overflow: hidden; position: relative;
+  }
+  .giant-value {
+    font-size: 22vh; font-weight: 900;
+    letter-spacing: -0.02em; line-height: 1;
+    white-space: nowrap; max-width: 100%; color: #fff;
+    text-shadow: 0 0 30px rgba(255,255,255,0.15);
+  }
+  .giant.is-new .giant-value { animation: zoomIn 0.6s ease-out; }
+  @keyframes zoomIn {
+    0% { transform: scale(0.85); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .email-text {
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 0 3vw;
+  }
+  .email-text-value {
+    font-size: 4.5vh; font-weight: 400; line-height: 1.2;
+    color: #cbd5e1; max-width: 100%;
+    overflow: hidden;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    font-style: italic;
+  }
+
+  /* ============ STATUS DOT ============ */
+  #status {
+    position: fixed; top: 1.5vh; right: 1.5vw;
+    display: flex; align-items: center; gap: 0.7vw;
+    font-size: 1.5vh; color: #444; font-weight: 500;
+    z-index: 100; opacity: 0.7;
+  }
+  .status-dot {
+    width: 1.2vh; height: 1.2vh; border-radius: 50%;
+    background: #4ade80; box-shadow: 0 0 8px #4ade80;
+    transition: all 0.3s;
+  }
+  .status-dot.warn  { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+  .status-dot.error { background: #ef4444; box-shadow: 0 0 8px #ef4444; animation: blink 1s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* Manual logout link, hidden by default */
+  #logoutLink {
+    position: fixed; bottom: 1vh; right: 1vw;
+    font-size: 1.4vh; color: #333;
+    z-index: 100; cursor: pointer; padding: 0.5vh 1vw;
+    opacity: 0.5;
+  }
+  #logoutLink:hover { opacity: 1; color: #888; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div id="loginGate">
+  <div class="panel">
+    <h1>FLS Display Wand</h1>
+    <p>Anmeldung erforderlich (Microsoft 365 · firstlevelsupport@fraportfs.de)</p>
+    <button class="login-btn" id="btnLogin">
+      <svg viewBox="0 0 23 23" fill="currentColor"><path d="M11 0H0v11h11V0zm12 0H12v11h11V0zM11 12H0v11h11V12zm12 0H12v11h11V12z" fill="#fff"/></svg>
+      Mit Microsoft anmelden
+    </button>
+    <div id="loginError"></div>
+  </div>
+</div>
+
+<!-- START GATE (after login) -->
+<div id="startGate" style="display:none">
+  <div class="inner">
+    <h1>Bereit</h1>
+    <p>👆 Bildschirm berühren um zu starten</p>
+  </div>
+</div>
+
+<!-- EMPTY STATE -->
+<div id="emptyState" style="display:none">
+  <div class="icon">✓</div>
+  <div class="text">Keine aktuellen Störungen</div>
+</div>
+
+<!-- DISPLAY -->
+<div id="display" style="display:none">
+  <div class="info-row">
+    <div class="info-cell">
+      <div class="info-label">Quelle</div>
+      <div class="info-value" id="f-quelle">—</div>
+    </div>
+    <div class="info-cell">
+      <div class="info-label">Typ</div>
+      <div class="info-value" id="f-typ">—</div>
+    </div>
+    <div class="info-cell">
+      <div class="info-label">Bereich</div>
+      <div class="info-value" id="f-bereich">—</div>
+    </div>
+    <div class="info-cell">
+      <div class="info-label">Terminal</div>
+      <div class="info-value" id="f-terminal">—</div>
+    </div>
+  </div>
+  <div class="giant" id="giant-proz">
+    <div class="giant-value" id="f-prozessstelle">—</div>
+  </div>
+  <div class="giant" id="giant-spur">
+    <div class="giant-value" id="f-spur">—</div>
+  </div>
+  <div class="email-text">
+    <div class="email-text-value" id="f-emailtext">—</div>
+  </div>
+</div>
+
+<!-- STATUS -->
+<div id="status">
+  <div class="status-dot" id="status-dot"></div>
+  <span id="status-text">Bereit</span>
+</div>
+
+<!-- LOGOUT (hidden until logged in) -->
+<div id="logoutLink" style="display:none" onclick="doLogout()">↻ Abmelden</div>
+
+<script>
+'use strict';
+
+// =============================================================
+// CONFIGURAZIONE - DA EDITARE PRIMA DEL DEPLOY
+// =============================================================
+const CONFIG = {
+  // Client ID dall'Azure App Registration. Ottienilo da:
+  //   portal.azure.com → App registrations → la tua app → "Application (client) ID"
+  clientId: "PASTE-YOUR-AZURE-CLIENT-ID-HERE",
+
+  // Tenant: "common" funziona per multi-tenant; per single-tenant Fraport
+  // metti il Tenant ID specifico oppure "fraportfs.onmicrosoft.com".
+  // "common" è il default sicuro all'inizio.
+  tenantId: "common",
+
+  // Scope: solo Mail.Read (delegated). NON Mail.Read.Shared perché
+  // assumiamo che il login venga fatto direttamente come
+  // firstlevelsupport@fraportfs.de (account proprio, non shared mailbox
+  // di terzi).
+  scopes: ["Mail.Read"],
+
+  // Polling
+  pollIntervalMs: 5000,        // 5 sec
+  displayTimeoutMs: 20 * 60 * 1000, // 20 min
+};
+
+// =============================================================
+// PROZESSSTELLEN MAPPING (estratto dal JSON v6.70)
+// Mappa nomi grezzi delle email -> nome canonico + terminal + bereich
+// =============================================================
+const PROZESSSTELLEN_MAP = [
+  {n:'T3_E3 _Transfer', t:'Terminal 3', b:'FGK', a:[]},
+  {n:'B_West', t:'Terminal 1', b:'FGK', a:['F_B_E2_West_ZKS', 'F_B_West_ZKS', 'B-West']},
+  {n:'B_Ost', t:'Terminal 1', b:'FGK', a:['F_B_E2_Ost_ZKS', 'F_B_Ost_ZKS', 'B-Ost']},
+  // Le altre 64 entry vengono caricate da `proz_map.js` adiacente, o
+  // possono essere inserite qui sopra manualmente. Vedi setup guide.
+];
+// NOTE: per non gonfiare questo file, lo script chiama loadProzMapExtra()
+// che prova a fare fetch di 'proz_map.json' dalla stessa cartella. Se
+// fallisce, usa solo le entry hardcoded sopra (i nomi raw saranno mostrati
+// così come arrivano dall'email).
+
+// =============================================================
+// MSAL INSTANCE
+// =============================================================
+const msalConfig = {
+  auth: {
+    clientId: CONFIG.clientId,
+    authority: `https://login.microsoftonline.com/${CONFIG.tenantId}`,
+    redirectUri: window.location.origin + window.location.pathname,
+  },
+  cache: {
+    cacheLocation: "localStorage",   // mantiene il login dopo restart browser
+    storeAuthStateInCookie: false
+  },
+  system: {
+    loggerOptions: { piiLoggingEnabled: false, logLevel: 1 }
+  }
+};
+
+let msalInstance = null;
+try {
+  msalInstance = new msal.PublicClientApplication(msalConfig);
+} catch (e) {
+  showLoginError("MSAL non si è caricata. Controllo internet?\n\n" + e.message);
+}
+
+// State
+let currentAccount = null;
+let lastSeenMessageId = null;
+let lastDisplayedReceivedAt = null;
+let firstPollDone = false;
+let pollTimer = null;
+let timeoutTimer = null;
+let audioCtx = null;
+let wakeLock = null;
+let pollErrors = 0;
+
+// =============================================================
+// INIT: gestisce redirect dopo login
+// =============================================================
+(async function init() {
+  if (CONFIG.clientId === "PASTE-YOUR-AZURE-CLIENT-ID-HERE") {
+    showLoginError("⚠️ Configurazione mancante:\n\nApri il file display_v2.html e sostituisci PASTE-YOUR-AZURE-CLIENT-ID-HERE con il Client ID della tua Azure App Registration.\n\nVedi SETUP_DISPLAY_WAND_v2.md per istruzioni.");
+    return;
+  }
+  if (!msalInstance) return;
+  try {
+    const resp = await msalInstance.handleRedirectPromise();
+    if (resp) {
+      currentAccount = resp.account;
+      msalInstance.setActiveAccount(currentAccount);
+      onLoggedIn();
+      return;
+    }
+    // Nessun redirect pendente — vediamo se già loggati da localStorage
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length > 0) {
+      currentAccount = accounts[0];
+      msalInstance.setActiveAccount(currentAccount);
+      onLoggedIn();
+    }
+  } catch (e) {
+    showLoginError("Login fehlgeschlagen:\n" + (e.errorMessage || e.message || String(e)));
+  }
+})();
+
+// Carica eventuali prozessstellen extra (se hostate adiacenti come proz_map.json)
+async function loadProzMapExtra() {
+  try {
+    const r = await fetch('proz_map.json', { cache: 'no-cache' });
+    if (r.ok) {
+      const arr = await r.json();
+      if (Array.isArray(arr)) {
+        // Sostituisci/aggiungi (per nome canonico unico)
+        const existing = new Set(PROZESSSTELLEN_MAP.map(x => x.n));
+        for (const item of arr) {
+          if (!existing.has(item.n)) PROZESSSTELLEN_MAP.push(item);
+        }
+        console.log('[proz] caricate', arr.length, 'prozessstellen da proz_map.json');
+      }
+    }
+  } catch(e) { /* silent */ }
+}
+loadProzMapExtra();
+
+// =============================================================
+// LOGIN HANDLERS
+// =============================================================
+document.getElementById('btnLogin').addEventListener('click', async () => {
+  if (!msalInstance) return;
+  hideLoginError();
+  try {
+    // Popup è meglio del redirect su tablet (mantiene contesto)
+    const resp = await msalInstance.loginPopup({
+      scopes: CONFIG.scopes,
+      prompt: 'select_account'
+    });
+    currentAccount = resp.account;
+    msalInstance.setActiveAccount(currentAccount);
+    onLoggedIn();
+  } catch (e) {
+    console.error('login error', e);
+    let msg = e.errorMessage || e.message || String(e);
+    if (msg.includes('AADSTS65001') || msg.toLowerCase().includes('consent')) {
+      msg = "Admin-Consent erforderlich.\n\nDie App benötigt Mail.Read und der Tenant erlaubt keinen User-Consent. " +
+            "Du musst eine Azure-Registrierung mit explizitem Admin-Consent erstellen (Plan B), " +
+            "oder einen Admin bitten, User-Consent in Fraport Azure AD zu aktivieren.";
+    }
+    showLoginError(msg);
+  }
+});
+
+function showLoginError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideLoginError() {
+  document.getElementById('loginError').style.display = 'none';
+}
+
+async function onLoggedIn() {
+  console.log('[auth] logged in as', currentAccount?.username);
+  setStatus('ok', currentAccount?.username || 'OK');
+  document.getElementById('loginGate').style.display = 'none';
+  document.getElementById('startGate').style.display = 'flex';
+  document.getElementById('logoutLink').style.display = 'block';
+}
+
+function doLogout() {
+  if (!msalInstance || !currentAccount) return;
+  if (!confirm('Wirklich abmelden?')) return;
+  msalInstance.logoutRedirect({ account: currentAccount });
+}
+
+// =============================================================
+// TAP-TO-START GATE: sblocca fullscreen / audio / orientation / wake
+// =============================================================
+document.getElementById('startGate').addEventListener('click', async () => {
+  try { await document.documentElement.requestFullscreen(); } catch(e) {}
+  try { await screen.orientation.lock('landscape'); } catch(e) {}
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
+  } catch(e) {}
+  await requestWakeLock();
+  document.getElementById('startGate').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'flex';
+  // Start polling
+  pollMail();
+  pollTimer = setInterval(pollMail, CONFIG.pollIntervalMs);
+});
+
+// =============================================================
+// WAKE LOCK
+// =============================================================
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    }
+  } catch(e) {}
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && wakeLock === null) requestWakeLock();
+});
+setInterval(() => {
+  if (wakeLock === null && document.visibilityState === 'visible') requestWakeLock();
+}, 30000);
+
+// =============================================================
+// BEEP
+// =============================================================
+function beep() {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    gain.gain.value = 0.2;
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+    osc.stop(audioCtx.currentTime + 0.5);
+  } catch(e) {}
+}
+
+// =============================================================
+// MICROSOFT GRAPH API
+// =============================================================
+async function getAccessToken() {
+  if (!msalInstance || !currentAccount) throw new Error('Non loggato');
+  try {
+    const resp = await msalInstance.acquireTokenSilent({
+      scopes: CONFIG.scopes,
+      account: currentAccount
+    });
+    return resp.accessToken;
+  } catch (e) {
+    // Silent fail: prova con popup
+    if (e.name === 'InteractionRequiredAuthError' || e.errorCode === 'interaction_required') {
+      const resp = await msalInstance.acquireTokenPopup({ scopes: CONFIG.scopes });
+      return resp.accessToken;
+    }
+    throw e;
+  }
+}
+
+async function pollMail() {
+  if (!currentAccount) return;
+  try {
+    const token = await getAccessToken();
+    // Prendi le ultime 5 mail (ordinare per receivedDateTime desc)
+    // Filtrare lato server con $filter consuma quota anche se 0 risultati,
+    // meglio prendere top 5 e filtrare in JS.
+    const url = 'https://graph.microsoft.com/v1.0/me/mailFolders/inbox/messages' +
+      '?$top=5' +
+      '&$orderby=receivedDateTime%20desc' +
+      '&$select=id,subject,from,receivedDateTime,body,bodyPreview';
+    const r = await fetch(url, {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    if (!r.ok) {
+      const errTxt = await r.text();
+      throw new Error('HTTP ' + r.status + ': ' + errTxt.slice(0,200));
+    }
+    const data = await r.json();
+    pollErrors = 0;
+    setStatus('ok', currentAccount?.username || 'OK');
+
+    if (!data.value || data.value.length === 0) {
+      checkTimeout();
+      return;
+    }
+
+    // Cerca la prima mail Lusi nelle top 5
+    let lusiMail = null;
+    for (const m of data.value) {
+      if (isLusiMail(m)) { lusiMail = m; break; }
+    }
+    if (!lusiMail) {
+      // Nessuna mail Lusi nelle top 5 — non aggiornare il display,
+      // continua a mostrare l'ultima Lusi nota (se entro 20 min)
+      checkTimeout();
+      return;
+    }
+
+    // Stessa mail già vista?
+    if (lusiMail.id === lastSeenMessageId) {
+      checkTimeout();
+      return;
+    }
+
+    // NUOVA mail Lusi: parsifica
+    const parsed = parseLusiMail(lusiMail);
+    if (!parsed) {
+      checkTimeout();
+      return;
+    }
+
+    lastSeenMessageId = lusiMail.id;
+    handleNewStoerung(parsed);
+
+  } catch (e) {
+    pollErrors++;
+    console.error('[poll]', e);
+    if (pollErrors >= 3 && pollErrors < 10) setStatus('warn', 'Verbindung instabil…');
+    else if (pollErrors >= 10) setStatus('error', 'Keine Verbindung');
+    checkTimeout();
+  }
+}
+
+// =============================================================
+// LUSI MAIL DETECTION & PARSING
+// =============================================================
+function isLusiMail(msg) {
+  const from = (msg.from?.emailAddress?.address || '').toLowerCase();
+  const subj = (msg.subject || '').toLowerCase();
+  return from.includes('lusitechnik') ||
+         subj.includes('fraport störstelle') ||
+         subj.includes('fraport stoerstelle') ||
+         subj.includes('ticket:');
+}
+
+function parseLusiMail(msg) {
+  // Estrai body come testo plain
+  const bodyText = getBodyText(msg);
+
+  // Estrai i campi standard del template Lusi
+  const bereichRaw  = extractField(bodyText, 'Kontrollbereich');
+  const typ         = extractField(bodyText, 'Kontrolltechniktyp');
+  const prozRaw     = extractField(bodyText, 'Prozessstelle');
+  const spur        = extractField(bodyText, 'Kontrollspur/Gerät');
+
+  // Email text: prima prova "Text:", poi fallback "Störung liegt vor:"
+  let mailText = extractField(bodyText, 'Text');
+  if (!mailText) {
+    const m = bodyText.match(/Störung liegt vor:\s*([^\r\n]+)/i);
+    if (m) mailText = m[1].trim();
+  }
+  if (!mailText) mailText = '(Neue Meldung)';
+
+  // Lookup prozessstelle (raw -> canonical)
+  const ps = lookupProzessstelle(prozRaw);
+
+  // Quelle: regola notturna 22:00-05:59 -> ASO
+  const received = new Date(msg.receivedDateTime);
+  const hour = received.getHours();
+  const quelle = (hour >= 22 || hour < 6) ? 'ASO' : 'Lusi-Technik';
+
+  return {
+    quelle,
+    typ: typ || '—',
+    prozessstelle: ps.name || prozRaw || '—',
+    terminal: ps.terminal || '—',
+    bereich: ps.bereich || bereichRaw || '—',
+    spur: spur || '—',
+    email_text: mailText,
+    received_at: msg.receivedDateTime
+  };
+}
+
+function getBodyText(msg) {
+  const content = msg.body?.content || msg.bodyPreview || '';
+  if (msg.body?.contentType === 'html') {
+    const div = document.createElement('div');
+    div.innerHTML = content;
+    // Sostituisce <br> e block elements con newlines per preservare struttura
+    div.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+    div.querySelectorAll('p, div, tr, li').forEach(el => {
+      el.appendChild(document.createTextNode('\n'));
+    });
+    return div.textContent || div.innerText || '';
+  }
+  return content;
+}
+
+function extractField(body, label) {
+  const lines = body.split(/\r?\n/);
+  const labelLow = label.toLowerCase();
+  for (const line of lines) {
+    const trimmed = line.replace(/^\s+/, '');
+    if (trimmed.toLowerCase().startsWith(labelLow)) {
+      // Cerca i ":" dopo la label
+      const colon = trimmed.indexOf(':', label.length);
+      if (colon > 0) {
+        return trimmed.substring(colon + 1).trim();
+      }
+    }
+  }
+  return '';
+}
+
+function lookupProzessstelle(raw) {
+  if (!raw) return { name: '', terminal: '', bereich: '' };
+  const rawLow = raw.toLowerCase().trim();
+  // 1) Match esatto sul name canonico
+  for (const ps of PROZESSSTELLEN_MAP) {
+    if (ps.n.toLowerCase() === rawLow) {
+      return { name: ps.n, terminal: ps.t, bereich: ps.b };
+    }
+  }
+  // 2) Match su aliases
+  for (const ps of PROZESSSTELLEN_MAP) {
+    if (ps.a && ps.a.length) {
+      for (const al of ps.a) {
+        if (al.toLowerCase() === rawLow) {
+          return { name: ps.n, terminal: ps.t, bereich: ps.b };
+        }
+      }
+    }
+  }
+  // 3) Nessun match: ritorna raw come name, vuoti terminal/bereich
+  return { name: raw, terminal: '', bereich: '' };
+}
+
+// =============================================================
+// DISPLAY LOGIC
+// =============================================================
+function handleNewStoerung(data) {
+  const ageMs = Date.now() - new Date(data.received_at).getTime();
+  if (ageMs > CONFIG.displayTimeoutMs) {
+    // Mail vecchia (es. arrivata mentre il display era spento) — non mostrarla
+    return;
+  }
+  const isVeryFirst = !firstPollDone;
+  if (isVeryFirst) {
+    // Primo load: mostra senza beep né fade aggressivo
+    showTicket(data, false);
+  } else {
+    fadeAndShow(data);
+    beep();
+  }
+  firstPollDone = true;
+  lastDisplayedReceivedAt = data.received_at;
+  scheduleTimeoutCheck(ageMs);
+}
+
+function checkTimeout() {
+  if (!lastDisplayedReceivedAt) {
+    // Nulla mostrato finora
+    if (document.getElementById('display').style.display === 'none' &&
+        document.getElementById('emptyState').style.display === 'none' &&
+        document.getElementById('startGate').style.display === 'none') {
+      showEmpty();
+    }
+    return;
+  }
+  const ageMs = Date.now() - new Date(lastDisplayedReceivedAt).getTime();
+  if (ageMs > CONFIG.displayTimeoutMs) {
+    lastDisplayedReceivedAt = null;
+    showEmpty();
+  }
+}
+
+function scheduleTimeoutCheck(currentAgeMs) {
+  if (timeoutTimer) clearTimeout(timeoutTimer);
+  const ms = CONFIG.displayTimeoutMs - currentAgeMs;
+  if (ms > 0) timeoutTimer = setTimeout(checkTimeout, ms + 500);
+}
+
+function fadeAndShow(data) {
+  const d = document.getElementById('display');
+  const e = document.getElementById('emptyState');
+  const emptyVisible = e.style.display !== 'none';
+  if (d.style.display === 'none' && !emptyVisible) { showTicket(data, true); return; }
+  if (emptyVisible) {
+    e.style.opacity = '0';
+    setTimeout(() => { e.style.display = 'none'; e.style.opacity = '1'; showTicket(data, true); }, 500);
+    return;
+  }
+  d.classList.add('fade-out');
+  setTimeout(() => { showTicket(data, true); d.classList.remove('fade-out'); }, 500);
+}
+
+function showTicket(data, isNew) {
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('display').style.display = 'grid';
+
+  setText('f-typ', data.typ);
+  setText('f-bereich', data.bereich);
+  setText('f-prozessstelle', data.prozessstelle);
+  setText('f-emailtext', data.email_text);
+
+  // Combina TYP + SPUR nel secondo giant (es. "GPA 5"). Se la spur contiene
+  // già "Spur" o "GPA", non riduplicare.
+  const typV = (data.typ || '').toString().trim();
+  const spurV = (data.spur || '').toString().trim();
+  let spurDisplay = '';
+  if (typV && spurV) {
+    const spurUp = spurV.toUpperCase();
+    if (spurUp.includes(typV.toUpperCase()) || spurUp.startsWith('SPUR') || spurUp.startsWith('GPA')) {
+      spurDisplay = spurV;
+    } else {
+      spurDisplay = typV + ' ' + spurV;
+    }
+  } else {
+    spurDisplay = spurV || typV || '—';
+  }
+  document.getElementById('f-spur').textContent = spurDisplay;
+
+  // Quelle color
+  const qEl = document.getElementById('f-quelle');
+  qEl.textContent = data.quelle || '—';
+  qEl.className = 'info-value';
+  const qLow = String(data.quelle || '').toLowerCase();
+  if (qLow.includes('aso')) qEl.classList.add('quelle-aso');
+  else if (qLow.includes('lusi')) qEl.classList.add('quelle-lusi');
+
+  // Terminal: abbrevia "Terminal X" -> "TX"
+  const tEl = document.getElementById('f-terminal');
+  let termText = data.terminal || '—';
+  const tMatch = String(termText).match(/[123]/);
+  if (tMatch && /terminal/i.test(termText)) termText = 'T' + tMatch[0];
+  tEl.textContent = termText;
+  tEl.className = 'info-value';
+  if (tMatch) tEl.classList.add('term-' + tMatch[0]);
+
+  // Auto-shrink
+  ['f-quelle','f-typ','f-bereich','f-terminal','f-prozessstelle','f-spur'].forEach(autoShrink);
+
+  if (isNew) {
+    const p = document.getElementById('giant-proz');
+    const s = document.getElementById('giant-spur');
+    p.classList.remove('is-new'); s.classList.remove('is-new');
+    void p.offsetWidth; void s.offsetWidth;
+    p.classList.add('is-new'); s.classList.add('is-new');
+  }
+}
+
+function showEmpty() {
+  document.getElementById('display').style.display = 'none';
+  const e = document.getElementById('emptyState');
+  e.style.display = 'flex'; e.style.opacity = '1';
+}
+
+function setText(id, val) {
+  document.getElementById(id).textContent = (val == null || val === '') ? '—' : String(val);
+}
+
+function autoShrink(id) {
+  const el = document.getElementById(id);
+  const parent = el.parentElement;
+  if (!parent) return;
+  el.style.fontSize = '';
+  let it = 0;
+  while (it < 25 && el.scrollWidth > parent.clientWidth * 0.95) {
+    const fs = parseFloat(getComputedStyle(el).fontSize);
+    if (fs < 30) break;
+    el.style.fontSize = (fs * 0.9) + 'px';
+    it++;
+  }
+}
+
+function setStatus(level, text) {
+  const dot = document.getElementById('status-dot');
+  const t = document.getElementById('status-text');
+  dot.className = 'status-dot' + (level === 'ok' ? '' : ' ' + level);
+  t.textContent = text;
+}
+</script>
+</body>
+</html>

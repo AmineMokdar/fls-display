@@ -1,0 +1,591 @@
+[
+  {
+    "n": "T3_E3 _Transfer",
+    "t": "Terminal 3",
+    "b": "FGK",
+    "a": []
+  },
+  {
+    "n": "B_West",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_B_E2_West_ZKS",
+      "F_B_West_ZKS",
+      "B-West"
+    ]
+  },
+  {
+    "n": "B_Ost",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_B_E2_Ost_ZKS",
+      "F_B_Ost_ZKS",
+      "B-Ost"
+    ]
+  },
+  {
+    "n": "A_E2",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_A_E2_ZKS",
+      "F_A_E2_Wurzel_ZKS"
+    ]
+  },
+  {
+    "n": "A_E2_Anbau",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_A_E2_Anbau_ZKS",
+      "F_A_E2_AnbauA_ZKS",
+      "A_E2 Anbau"
+    ]
+  },
+  {
+    "n": "A_E3",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_A_E3_ZKS",
+      "F_A_E3_Wurzel_ZKS"
+    ]
+  },
+  {
+    "n": "A_E4",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_A_E4_ZKS",
+      "F_A_E4_Wurzel_TKS"
+    ]
+  },
+  {
+    "n": "A1_5",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_A_E2_A1-A5_DKS",
+      "F_A_E2_A1_5_DKS",
+      "A 1-5"
+    ]
+  },
+  {
+    "n": "FCT",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": []
+  },
+  {
+    "n": "A_E3_PWK",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_A_E3_PWK_ZKS"
+    ]
+  },
+  {
+    "n": "A_25_Sperrgepaeck",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_A_25_Sperrgepack",
+      "A 25 Sperrgepäck"
+    ]
+  },
+  {
+    "n": "ALPHA_Raum",
+    "t": "Terminal 2",
+    "b": "MRKA",
+    "a": [
+      "ALPHA Raum"
+    ]
+  },
+  {
+    "n": "B_Mitte",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_B_E2_Mitte_TKS",
+      "F_B_Mitte_ZKS",
+      "B-Mitte"
+    ]
+  },
+  {
+    "n": "B_Transfer",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_B_E3_Transfer_TKS",
+      "F_B_Transfer_ZKS",
+      "B-Transfer"
+    ]
+  },
+  {
+    "n": "B_Transfer_PRM_OST",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_B_Transfer_PRM_OST",
+      "B-Transfer-PRM-OST"
+    ]
+  },
+  {
+    "n": "B41",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_B41",
+      "F_B_41"
+    ]
+  },
+  {
+    "n": "B46",
+    "t": "Terminal 1",
+    "b": "FHK",
+    "a": [
+      "F_US_NKP_B46",
+      "F_B46"
+    ]
+  },
+  {
+    "n": "B60",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_B60"
+    ]
+  },
+  {
+    "n": "BETA_Raum",
+    "t": "Terminal 2",
+    "b": "MRKA",
+    "a": [
+      "BETA Raum"
+    ]
+  },
+  {
+    "n": "VIP_T3",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": []
+  },
+  {
+    "n": "C_1",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_C_1",
+      "F_C_E2_C1_DKS"
+    ]
+  },
+  {
+    "n": "C_13",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_C_13"
+    ]
+  },
+  {
+    "n": "C_2",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_C_E2_C2_DKS",
+      "F_C_2"
+    ]
+  },
+  {
+    "n": "C_4",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_C_E2_C4_DKS",
+      "F_C_4"
+    ]
+  },
+  {
+    "n": "C_6",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_C_E2_C6_DKS",
+      "F_C_6"
+    ]
+  },
+  {
+    "n": "CD_Ost",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_C_E3_CD_Ost_TKS",
+      "F_CD_Ost_ZKS",
+      "CD-Ost"
+    ]
+  },
+  {
+    "n": "CD_West",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_C_E2_CD_West_ZKS",
+      "F_CD_West_ZKS",
+      "CD-West"
+    ]
+  },
+  {
+    "n": "D_1_4",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_D_E3_D1_4_DKS",
+      "D 1-4"
+    ]
+  },
+  {
+    "n": "D_5_8",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_D_E3_D5_8_DKS",
+      "D 5-8"
+    ]
+  },
+  {
+    "n": "D_50_54",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_D_50_54",
+      "D 50-54"
+    ]
+  },
+  {
+    "n": "D_9",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_D_E3_D9",
+      "D 9"
+    ]
+  },
+  {
+    "n": "DE_Zentral",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_DE_E2_Zentral_ZKS"
+    ]
+  },
+  {
+    "n": "E_26",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_E_E3_E26",
+      "E 26"
+    ]
+  },
+  {
+    "n": "E2_5",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_E_E3_E2_5_DKS",
+      "E 2-5"
+    ]
+  },
+  {
+    "n": "E6_9",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_E_E3_E6_9_DKS",
+      "E 6-9"
+    ]
+  },
+  {
+    "n": "FCT",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_FCT"
+    ]
+  },
+  {
+    "n": "GAMMA_Raum",
+    "t": "Terminal 2",
+    "b": "MRKA",
+    "a": [
+      "GAMMA Raum",
+      "M_Gamma_Raum"
+    ]
+  },
+  {
+    "n": "GAT",
+    "t": "Terminal 3",
+    "b": "FGK",
+    "a": [
+      "F_GAT"
+    ]
+  },
+  {
+    "n": "Halle_Mitte",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_Halle_Mitte",
+      "Halle Mitte"
+    ]
+  },
+  {
+    "n": "Leitstelle_A",
+    "t": "Terminal 1",
+    "b": "MRKA",
+    "a": [
+      "F_Leitstelle_A",
+      "Leitstelle A"
+    ]
+  },
+  {
+    "n": "Leitstelle_B",
+    "t": "Terminal 1",
+    "b": "MRKA",
+    "a": [
+      "F_Leitstelle_B",
+      "Leitstelle B"
+    ]
+  },
+  {
+    "n": "Leitstelle_C",
+    "t": "Terminal 1",
+    "b": "MRKA",
+    "a": [
+      "F_Leitstelle_C",
+      "Leitstelle C"
+    ]
+  },
+  {
+    "n": "Leitstelle_D",
+    "t": "Terminal 2",
+    "b": "MRKA",
+    "a": [
+      "M_T2_Leitstelle_D",
+      "F_Leitstelle_D",
+      "Leitstelle D"
+    ]
+  },
+  {
+    "n": "Leitstelle_E",
+    "t": "Terminal 2",
+    "b": "MRKA",
+    "a": [
+      "F_Leitstelle_E",
+      "Leitstelle E"
+    ]
+  },
+  {
+    "n": "Lusi_Buero",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_Lusi_Buero",
+      "Lusi-Büro"
+    ]
+  },
+  {
+    "n": "M_Halle_Mitte",
+    "t": "Terminal 1",
+    "b": "MRKA",
+    "a": [
+      "M_Halle_Mitte"
+    ]
+  },
+  {
+    "n": "M_Sperrgepaeck",
+    "t": "Terminal 1",
+    "b": "MRKA",
+    "a": [
+      "M_Sperrgepack"
+    ]
+  },
+  {
+    "n": "M_TZA",
+    "t": "Terminal 1",
+    "b": "MRKA",
+    "a": [
+      "M_TZA"
+    ]
+  },
+  {
+    "n": "Muko",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_Muko_ZKS",
+      "F_Muko",
+      "DE_Zentral",
+      "F_DE_E2_Zentral_ZKS"
+    ]
+  },
+  {
+    "n": "Pier_G",
+    "t": "Terminal 3",
+    "b": "FGK",
+    "a": [
+      "F_Pier_G"
+    ]
+  },
+  {
+    "n": "Pier_H",
+    "t": "Terminal 3",
+    "b": "FGK",
+    "a": [
+      "F_Pier_H"
+    ]
+  },
+  {
+    "n": "Pier_J",
+    "t": "Terminal 3",
+    "b": "FGK",
+    "a": [
+      "F_Pier_J"
+    ]
+  },
+  {
+    "n": "SCSC",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_B_E1_Mitte (SCSC)_DKS",
+      "F_SCSC"
+    ]
+  },
+  {
+    "n": "T1_Lager",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_T1_Lager",
+      "T1 Lager"
+    ]
+  },
+  {
+    "n": "T2",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_T2"
+    ]
+  },
+  {
+    "n": "T2_Lager",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_T2_Lager",
+      "T2 Lager"
+    ]
+  },
+  {
+    "n": "T2_Rueckfuehrung",
+    "t": "Terminal 2",
+    "b": "FGK",
+    "a": [
+      "F_T2_Rueckfuehrung",
+      "T2 Rückführung"
+    ]
+  },
+  {
+    "n": "T3_E3",
+    "t": "Terminal 3",
+    "b": "FGK",
+    "a": [
+      "F_T3_ZKS",
+      "T3 ZKS",
+      "F_T3_E3_TKS",
+      "F_T3_E3_ZKS"
+    ]
+  },
+  {
+    "n": "T3_Lager",
+    "t": "Terminal 3",
+    "b": "FGK",
+    "a": [
+      "F_T3_Lager",
+      "T3 Lager"
+    ]
+  },
+  {
+    "n": "TAW",
+    "t": "Terminal 1",
+    "b": "MRKA",
+    "a": [
+      "F_TAW"
+    ]
+  },
+  {
+    "n": "Terminal_3",
+    "t": "Terminal 3",
+    "b": "FGK",
+    "a": [
+      "F_Terminal_3"
+    ]
+  },
+  {
+    "n": "TZA_Plus",
+    "t": "Terminal 1",
+    "b": "MRKA",
+    "a": [
+      "F_TZA_Plus"
+    ]
+  },
+  {
+    "n": "VIP_A_Lounge",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_VIP_A_Lounge",
+      "VIP A Lounge",
+      "F_VIP_A25"
+    ]
+  },
+  {
+    "n": "VIP_B_Lounge",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_VIP_B_Lounge",
+      "VIP B Lounge"
+    ]
+  },
+  {
+    "n": "Z14",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_A_E3_Z14_TKS",
+      "Z 14"
+    ]
+  },
+  {
+    "n": "Z16_NKP",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_Z16_NKP"
+    ]
+  },
+  {
+    "n": "Z25_NKP",
+    "t": "Terminal 1",
+    "b": "FGK",
+    "a": [
+      "F_Z25_NKP",
+      "F_US_NKP_Z25"
+    ]
+  }
+]
