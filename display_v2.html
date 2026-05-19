@@ -334,7 +334,7 @@ let pollErrors = 0;
 // =============================================================
 (async function init() {
   if (CONFIG.clientId === "98fd7b62-23ad-4484-bfb7-c774bc0cf24d") {
-    showLoginError("⚠️ Configurazione mancante:\n\nApri il file display_v2.html e sostituisci CONFIG.clientId === "98fd7b62-23ad-4484-bfb7-c774bc0cf24d" con il Client ID della tua Azure App Registration.\n\nVedi SETUP_DISPLAY_WAND_v2.md per istruzioni.");
+    showLoginError("⚠️ Configurazione mancante:\n\nApri il file display_v2.html e sostituisci PASTE-YOUR-AZURE-CLIENT-ID-HERE con il Client ID della tua Azure App Registration.\n\nVedi SETUP_DISPLAY_WAND_v2.md per istruzioni.");
     return;
   }
   if (!msalInstance) return;
